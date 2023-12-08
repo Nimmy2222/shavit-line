@@ -120,7 +120,7 @@ public void Shavit_OnReplaySaved(int client, int style, float time, int jumps, i
 				flags = aFrame.flags;
 			}
 		}
-		hClosestPos[style][track] = new ClosestPos(g_hReplayFrames[style][track], 0, 0, Shavit_GetReplayFrameCount(track,style));	
+		hClosestPos[track][style] = new ClosestPos(g_hReplayFrames[style][track], 0, 0, Shavit_GetReplayFrameCount(track,style));	
 	}
 	delete list;
 }
@@ -143,7 +143,7 @@ public Action OnPlayerRunCmd(int client) {
 	int style = cStyle[client];
 	int track = cTrack[client];
 	ArrayList list = g_hReplayFrames[track][style];
-	if(!list) {
+	if(list == INVALID_HANDLE || hClosestPos[track][style] == INVALID_HANDLE) {
 		return Plugin_Continue;	
 	}
 
