@@ -108,12 +108,12 @@ public void Shavit_OnReplaySaved(int client, int style, float time, int jumps, i
 	delete hClosestPos[track][style];
 	delete g_hReplayFrames[track][style];
 
-	ArrayList list = Shavit_GetReplayFrames(track, style);
+	ArrayList list = Shavit_GetReplayFrames(style, track);
 	g_hReplayFrames[style][track] = new ArrayList(sizeof(frame_t));
 	if(list) {
 		frame_t aFrame;
 		int flags;
-		for(int i = 0; i < Shavit_GetReplayFrameCount(track, style); i++) {
+		for(int i = 0; i < Shavit_GetReplayFrameCount(style, track); i++) {
 			list.GetArray(i, aFrame, sizeof(frame_t));
 			if (aFrame.flags & FL_ONGROUND && !(flags & FL_ONGROUND)) {
 				g_hReplayFrames[style][track].PushArray(aFrame);
