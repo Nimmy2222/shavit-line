@@ -9,8 +9,8 @@
 
 int sprite;
 
-ArrayList g_hReplayFrames[TRACKS_SIZE][STYLE_LIMIT];
-ClosestPos hClosestPos[TRACKS_SIZE][STYLE_LIMIT];
+ArrayList g_hReplayFrames[STYLE_LIMIT][TRACKS_SIZE];
+ClosestPos hClosestPos[STYLE_LIMIT][TRACKS_SIZE];
 Cookie lines_settings;
 
 int cTrack[MAXPLAYERS + 1];
@@ -71,27 +71,31 @@ public void OnConfigsExecuted() {
 }
 
 public void Shavit_OnReplaysLoaded() {
-	for( int z; z < TRACKS_SIZE; z++ ) {
-		for( int v; v < STYLE_LIMIT; v++ ) {		
-			delete hClosestPos[z][v];
-			delete g_hReplayFrames[z][v];
-			ArrayList list = Shavit_GetReplayFrames(v, z);
-			g_hReplayFrames[z][v] = new ArrayList(sizeof(frame_t));
-			if(list) {
-				frame_t aFrame;
-				int flags;
-				for(int i = 0; i < Shavit_GetReplayFrameCount(v,z); i++) {
-					list.GetArray(i, aFrame, sizeof(frame_t));
-					if ((aFrame.flags & FL_ONGROUND) && !(flags & FL_ONGROUND)) {
-						g_hReplayFrames[z][v].PushArray(aFrame);
-					}
-					flags = aFrame.flags;
-				}
-				hClosestPos[z][v] = new ClosestPos(g_hReplayFrames[z][v], 0, 0, Shavit_GetReplayFrameCount(v,z));	
-			}
-			delete list;
+	for(int style = 0; style < STYLE_LIMIT; style++ ) {
+		for(int track = 0; track < TRACKS_SIZE; track++ ) {		
+			LoadReplay(style, track);
 		}
 	}
+}
+
+public void LoadReplay(int style, int track) {
+	delete hClosestPos[style][track];
+	delete g_hReplayFrames[style][track];
+	ArrayList list = Shavit_GetReplayFrames(style, track, true);
+	g_hReplayFrames[style][track] = new ArrayList(sizeof(frame_t));
+	if(list) {
+		frame_t aFrame;
+		int flags;
+		for(int i = 0; i < Shavit_GetReplayFrameCount(style, track); i++) {
+			list.GetArray(i, aFrame, sizeof(frame_t));
+			if ((aFrame.flags & FL_ONGROUND) && !(flags & FL_ONGROUND)) {
+				g_hReplayFrames[style][track].PushArray(aFrame);
+			}
+			flags = aFrame.flags;
+		}
+		hClosestPos[style][track] = new ClosestPos(g_hReplayFrames[style][track], 0, 0, Shavit_GetReplayFrameCount(style, track));	
+	}
+	delete list;
 }
 
 public void Shavit_OnStyleChanged(int client, int oldstyle, int newstyle, int track, bool manual) {
@@ -105,24 +109,7 @@ public void Shavit_OnReplaySaved(int client, int style, float time, int jumps, i
 	if(!isbestreplay || istoolong) {
 		return;
 	}
-	delete hClosestPos[track][style];
-	delete g_hReplayFrames[track][style];
-
-	ArrayList list = Shavit_GetReplayFrames(style, track);
-	g_hReplayFrames[style][track] = new ArrayList(sizeof(frame_t));
-	if(list) {
-		frame_t aFrame;
-		int flags;
-		for(int i = 0; i < Shavit_GetReplayFrameCount(style, track); i++) {
-			list.GetArray(i, aFrame, sizeof(frame_t));
-			if (aFrame.flags & FL_ONGROUND && !(flags & FL_ONGROUND)) {
-				g_hReplayFrames[style][track].PushArray(aFrame);
-				flags = aFrame.flags;
-			}
-		}
-		hClosestPos[track][style] = new ClosestPos(g_hReplayFrames[style][track], 0, 0, Shavit_GetReplayFrameCount(track,style));	
-	}
-	delete list;
+	LoadReplay(style, track);
 }
 
 #define TE_TIME 1.0
@@ -142,15 +129,15 @@ public Action OnPlayerRunCmd(int client) {
 	ticks[client] = 0;
 	int style = cStyle[client];
 	int track = cTrack[client];
-	ArrayList list = g_hReplayFrames[track][style];
-	if(list == INVALID_HANDLE || hClosestPos[track][style] == INVALID_HANDLE) {
+	ArrayList list = g_hReplayFrames[style][track];
+	if(list == INVALID_HANDLE || hClosestPos[style][track] == INVALID_HANDLE) {
 		return Plugin_Continue;	
 	}
 
 	float pos[3];
 	GetClientAbsOrigin(client, pos);
 
-	int closeframe = max(0, hClosestPos[track][style].Find(pos) - 4);
+	int closeframe = max(0, hClosestPos[style][track].Find(pos) - 4);
 	int endframe = min(list.Length, closeframe + 10);
 
 	bool draw;
