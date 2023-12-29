@@ -101,7 +101,7 @@ public void LoadReplay(int style, int track)
 	{
 		frame_t aFrame;
 		int flags;
-		for(int i = 0; i < Shavit_GetReplayFrameCount(style, track); i++)
+		for(int i = 0; i < list.Length; i++)
 		{
 			list.GetArray(i, aFrame, sizeof(frame_t));
 			if ((aFrame.flags & FL_ONGROUND) && !(flags & FL_ONGROUND))
@@ -162,11 +162,11 @@ public Action OnPlayerRunCmd(int client)
 	float pos[3];
 	GetClientAbsOrigin(client, pos);
 
-	int closeframe = max(0, g_hClosestPos[style][track].Find(pos) - 4);
-	int endframe = min(g_hReplayFrames[style][track].Length, closeframe + 10);
+	int closeframe = max(0, g_hClosestPos[style][track].Find(pos) - 2);
+	int endframe = min(g_hReplayFrames[style][track].Length, closeframe + 12);
 
 	frame_t aFrame;
-	for(int i = closeframe ; i < endframe; i++ )
+	for(int i = closeframe ; i < endframe; i++)
 	{
 		g_hReplayFrames[style][track].GetArray(i, aFrame, sizeof(frame_t));
 		aFrame.pos[2] += 2.5;
