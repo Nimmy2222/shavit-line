@@ -101,6 +101,7 @@ public void LoadReplay(int style, int track)
 	{
 		frame_t aFrame;
 		int flags;
+
 		for(int i = 0; i < list.Length; i++)
 		{
 			list.GetArray(i, aFrame, sizeof(frame_t));
@@ -155,6 +156,11 @@ public Action OnPlayerRunCmd(int client)
 	int track = g_iTrack[client];
 
 	if(g_hReplayFrames[style][track] == INVALID_HANDLE || g_hClosestPos[style][track] == INVALID_HANDLE)
+	{
+		return Plugin_Continue;
+	}
+
+	if(g_hReplayFrames[style][track].Length == 0)
 	{
 		return Plugin_Continue;
 	}
