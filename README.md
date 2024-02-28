@@ -1,7 +1,5 @@
 # shavit-line
 
-### [my discord](https://discord.gg/j9nfnjcUVd)
-
 ![image](https://github.com/SeenKid/shavit-line/assets/30565751/b9f07277-c8f6-42fd-8d07-762b7d230efe)
 
 ## Requirements ##
