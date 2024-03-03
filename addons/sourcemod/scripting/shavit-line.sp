@@ -4,7 +4,8 @@
 #include <clientprefs>
 #include <closestpos>
 #include <sdktools>
-#include <shavit>
+#include <shavit/core>
+#include <shavit/replay-playback>
 #include <sourcemod>
 
 int sprite;
